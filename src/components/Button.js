@@ -9,9 +9,11 @@ const Button = ({ title, style , onPress}) => {
     <Pressable
     onPress={onPress}
       style={{
-        padding: 32,
+        height:scale(64),
         backgroundColor:Colors.primary,
         borderRadius:scale(32),
+        alignItems:"center",
+        justifyContent:"center",
         ...style
       }}
     >

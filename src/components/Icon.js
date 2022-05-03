@@ -5,6 +5,7 @@ import { ScaledSheet, scale } from "react-native-size-matters";
 import { Colors } from "../styles/Styles";
 
 const Icon = ({ onPress, bg, icon, style }) => {
+  bg =  typeof bg==="boolean"? '#0000004D': bg
   return (
     <IconlyProvider
       set="outline"
@@ -16,7 +17,7 @@ const Icon = ({ onPress, bg, icon, style }) => {
         onPress={onPress}
         style={
           bg
-            ? [styles.icon, { backgroundColor: "#0000004D", ...style }]
+            ? [styles.icon, { backgroundColor: bg, ...style }]
             : [styles.icon, {borderWidth: 1, borderColor: Colors.white60, ...style }]
         }
       >

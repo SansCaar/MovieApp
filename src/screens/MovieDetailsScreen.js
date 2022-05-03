@@ -54,7 +54,7 @@ const Genre = ({ name }) => {
   );
 };
 
-const MovieDetailsScreen = ({}) => {
+const MovieDetailsScreen = ({movie_id}) => {
   return (
     <>
       <Image
@@ -111,8 +111,9 @@ const MovieDetailsScreen = ({}) => {
           <View style={[styles.container,{marginBottom:scale(104)}]}>
             <Text style={TextStyles.h4}>Cast</Text>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ marginTop: scale(16) }}>
-              {casts.map((cast) => {
+              {casts.map((cast, i) => {
                 return <Cast
+                  key={i}
                   name={cast.name}
                   character={cast.character}
                   profile_path={cast.profile_path}
@@ -123,7 +124,7 @@ const MovieDetailsScreen = ({}) => {
         </View>
 
       </ScrollView>
-      <Button title="Hello" style={styles.playButton}/>
+      <Button title="Watch Movie" style={styles.playButton}/>
 
       <Icon
         style={styles.backIcon}
