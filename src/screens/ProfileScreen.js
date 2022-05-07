@@ -1,14 +1,17 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, {useContext} from "react";
+import { View, Text, Image } from "react-native";
 
 import { ScaledSheet, scale } from "react-native-size-matters";
-import { ArrowLeft, Home } from "react-native-iconly";
+import { ArrowLeft,  } from "react-native-iconly";
+
+import AppContext from "../context/AppContext";
 
 import Icon from "../components/Icon";
 import { TextStyles, Colors } from "../styles/Styles";
 
 
 const Profile = ({ navigation }) => {
+  const {user} = useContext(AppContext);
   return (
     <View style={styles.container}>
        <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -20,10 +23,13 @@ const Profile = ({ navigation }) => {
 
         {/* <Text style={[TextStyles.h3, { textAlign: "center" }]}>FilmFare</Text> */}
       </View>
-      <View style={{flex:1,alignItems:"center", justifyContent:"center"}}>
-          
-      <Text style={TextStyles.h2}>
-          ProfileScreen
+      <View style={{flex:1, alignItems:"center"}}>
+        <Image source={{uri: user.photoUrl}} style={{height:scale(120), width:scale(120), borderRadius:scale(200)}} />
+      <Text style={TextStyles.h3}>
+          {user.name}
+      </Text>
+      <Text style={TextStyles.p}>
+          {user.email}
       </Text>
       </View>
     </View>

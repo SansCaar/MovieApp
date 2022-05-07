@@ -1,11 +1,10 @@
 import React, { createContext, useEffect, useState } from "react";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const AppContect = createContext({});
+const AppContext = createContext({});
 
 export const ContextProvider = ({children}) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false)
   
   useEffect(async () => {
     try {
@@ -21,9 +20,9 @@ export const ContextProvider = ({children}) => {
   }, []);
 
   return (
-    <AppContect.Provider value={{ user, setUser, setLoading }}>
-      {!loading && children}
-    </AppContect.Provider>
+    <AppContext.Provider value={{ user, setUser}}>
+      {children}
+    </AppContext.Provider>
   );
 };
-export default AppContect;
+export default AppContext;

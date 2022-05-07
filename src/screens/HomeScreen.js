@@ -5,11 +5,11 @@ import Icon from "../components/Icon";
 import { Login, User } from "react-native-iconly";
 import { Colors, TextStyles } from "../styles/Styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import AppContect from "../context/AppContext";
+import AppContext from "../context/AppContext";
 import Button from "../components/Button";
 
 const HomeScreen = ({ navigation }) => {
-  const { user, setUser } = useContext(AppContect);
+  const { user, setUser } = useContext(AppContext);
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>

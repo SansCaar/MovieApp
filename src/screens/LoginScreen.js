@@ -10,11 +10,11 @@ import * as Facebook from "expo-facebook";
 import * as Google from "expo-google-app-auth";
 import { ArrowLeft, Home } from "react-native-iconly";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import AppContect from "../context/AppContext";
+import AppContext from "../context/AppContext";
 
 
 const LoginScreen = ({ navigation }) => {
-  const {setUser} = useContext(AppContect)
+  const {setUser} = useContext(AppContext)
   async function signInWithFacebookAsync() {
     try {
       await Facebook.initializeAsync({
