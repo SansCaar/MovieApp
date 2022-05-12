@@ -1,20 +1,26 @@
 import React, { useContext } from "react";
 import { View, Text, ScrollView, Image } from "react-native";
-import { ScaledSheet, scale } from "react-native-size-matters";
+
 import Icon from "../components/Icon";
-import { Login, User } from "react-native-iconly";
 import { Colors, TextStyles } from "../styles/Styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppContext from "../context/AppContext";
-import Button from "../components/Button";
+
+import { User } from "react-native-iconly";
+import { ScaledSheet, scale } from "react-native-size-matters";
+import { StatusBar } from "expo-status-bar";
+import Constants from 'expo-constants';
 
 const HomeScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AppContext);
+
   return (
+    <>
+
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={TextStyles.h2}>Hello{user?"\n"+user.name.split(' ')[0]:null}!</Text>
         <Icon
+        style={{marginLeft:'auto'}}
           icon={
             user ? (
               <Image
@@ -33,27 +39,21 @@ const HomeScreen = ({ navigation }) => {
         />
       </View>
     
-      <Button
-        onPress={async () => {
-          await AsyncStorage.removeItem("user");
-          setUser(null);
-          const data = await AsyncStorage.getItem("user");
-          console.log(data);
-        }}
-        title="Logout"
-      />
     </ScrollView>
+    <StatusBar style="light" animated={true} />
+    </>
   );
 };
 const styles = ScaledSheet.create({
   container: {
     flex: 1,
     position: "relative",
-    paddingVertical: "40@s",
+    paddingTop: `${40+Constants.statusBarHeight}@s`,
     paddingHorizontal: "24@s",
     backgroundColor: Colors.background,
   },
   header: {
+    flex:1,
     flexDirection: "row",
     justifyContent: "space-between",
   },

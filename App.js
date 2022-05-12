@@ -1,5 +1,3 @@
-import React from 'react';
-
 import AppStack from "./src/navigation/AppStack";
 import { useFonts } from "expo-font";
 import { ContextProvider } from './src/context/AppContext';

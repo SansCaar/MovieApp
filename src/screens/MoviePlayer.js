@@ -16,7 +16,7 @@ export default function MoviePlayer({type,movie}) {
         source={{ uri:movieUrl}}
         setBuiltInZoomControls={false}
       />
-      <StatusBar />
+    <StatusBar style="light" animated={true} />
       </>
   );
 }

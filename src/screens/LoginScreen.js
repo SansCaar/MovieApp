@@ -1,17 +1,17 @@
 import React, {useContext} from "react";
 import { View, Text, SafeAreaView, Image } from "react-native";
 
-import { ScaledSheet, scale } from "react-native-size-matters";
-import Button from "../components/Button";
-import Icon from "../components/Icon";
-import { Colors, TextStyles } from "../styles/Styles";
 
 import * as Facebook from "expo-facebook";
 import * as Google from "expo-google-app-auth";
 import { ArrowLeft, Home } from "react-native-iconly";
+import { ScaledSheet, scale } from "react-native-size-matters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import AppContext from "../context/AppContext";
 
+import Button from "../components/Button";
+import Icon from "../components/Icon";
+import AppContext from "../context/AppContext";
+import { Colors, TextStyles } from "../styles/Styles";
 
 const LoginScreen = ({ navigation }) => {
   const {setUser} = useContext(AppContext)
@@ -66,8 +66,6 @@ const LoginScreen = ({ navigation }) => {
           bg={true}
           onPress={navigation.goBack}
         />
-
-        {/* <Text style={[TextStyles.h3, { textAlign: "center" }]}>FilmFare</Text> */}
       </View>
       <View style={styles.bottom}>
         <View
