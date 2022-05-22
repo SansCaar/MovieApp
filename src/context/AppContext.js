@@ -5,26 +5,29 @@ const AppContext = createContext({});
 
 export const ContextProvider = ({children}) => {
   const [user, setUser] = useState(null);
-  
+  const [favourite, setFavourite]  = useState(null)
   const logout = async () => {
       await AsyncStorage.removeItem("user");
-      setUser(null);
-      const data = await AsyncStorage.getItem("user");
-    
+      setUser(null);    
   }
   useEffect(async () => {
     try {
       const data = await AsyncStorage.getItem("user");
+      const fav = await AsyncStorage.getItem("favourite");
       if (data != null) {
         setUser(JSON.parse(data));
+      }
+      if(fav != null){
+        setFavourite(fav)
       }
     } catch (e) {
       console.log(e);
     }
   }, []);
+  
 
   return (
-    <AppContext.Provider value={{ user, setUser, logout}}>
+    <AppContext.Provider value={{ user, setUser, logout, favourite, setFavourite}}>
       {children}
     </AppContext.Provider>
   );

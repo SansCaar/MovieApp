@@ -54,7 +54,7 @@ const Genre = ({ name }) => {
   );
 };
 
-const MovieDetailsScreen = ({movie_id}) => {
+const MovieDetailsScreen = ({movie_id, navigation}) => {
   return (
     <>
       <Image
@@ -124,12 +124,13 @@ const MovieDetailsScreen = ({movie_id}) => {
         </View>
 
       </ScrollView>
-      <Button title="Watch Movie" style={styles.playButton}/>
+      <Button title="Watch Movie" style={styles.playButton} />
 
       <Icon
         style={styles.backIcon}
         bg={true}
         icon={<ArrowLeft size={scale(24)} />}
+        onPress={navigation.goBack}
       />
       <StatusBar />
     </>

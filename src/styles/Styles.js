@@ -41,6 +41,9 @@ const TextStyles = ScaledSheet.create({
           fontSize:'16@ms0.4',
           color:'white'
       },
+      movieTitle:{
+        
+      }
 
 })
 export {TextStyles, Colors}
