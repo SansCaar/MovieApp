@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import {
   View,
   Text,
@@ -7,43 +7,19 @@ import {
   Dimensions,
   ScrollView,
   StatusBar,
+  ActivityIndicator
 } from "react-native";
 import { ArrowLeft, Heart, Heart2, Star } from "react-native-iconly";
 import { ScaledSheet, scale } from "react-native-size-matters";
 import Button from "../components/Button";
 import Cast from "../components/Cast";
 import Icon from "../components/Icon";
+import { genres, getCast, POSTER_URL, PROFILE_URL } from "../context/utils";
 import { Colors, TextStyles } from "../styles/Styles";
 
 const sWidth = Dimensions.get("window").width;
 
-let genres = ["Comedy", "Action", "Thriller"];
-let casts = [
-  {
-    name: "Sanskar",
-    character: "Moon Knight",
-    profile_path:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-  },
-  {
-    name: "dfasdfad",
-    character: "Harold",
-    profile_path:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-  },
-  {
-    name: "Sadfasdfasfnskar",
-    character: "Khai ko ho",
-    profile_path:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-  },
-  {
-    name: "dfasdfadsfasf",
-    character: "Tyo mareko chai",
-    profile_path:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-  },
-];
+
 const Genre = ({ name }) => {
   return (
     <View style={{ flexDirection: "row" }}>
@@ -54,11 +30,18 @@ const Genre = ({ name }) => {
   );
 };
 
-const MovieDetailsScreen = ({movie_id, navigation}) => {
+const MovieDetailsScreen = ({ route, navigation }) => {
+  const { movie } = route.params;
+  const [casts, setCasts] = useState([]);
+
+  React.useEffect( async()=>{
+    setCasts(await getCast(movie.id))
+    console.log(casts)
+  },[])
   return (
     <>
       <Image
-        source={require("../../assets/backdrop.jpg")}
+        source={{ uri: `${POSTER_URL}/${movie.poster_path}` }}
         style={{
           height: sWidth * 1.5,
           width: sWidth,
@@ -73,11 +56,8 @@ const MovieDetailsScreen = ({movie_id, navigation}) => {
         <View style={styles.movieContainer}>
           <View style={styles.movieDataContainer}>
             <View>
-              <Text style={TextStyles.h3}>Moon Knight</Text>
+              <Text style={TextStyles.h3}>{movie.title}</Text>
               <View style={styles.movieData}>
-                <Text style={{ ...TextStyles.p, marginRight: scale(16) }}>
-                  Marvel Studios
-                </Text>
                 <Star
                   set="outline"
                   size={24}
@@ -86,45 +66,49 @@ const MovieDetailsScreen = ({movie_id, navigation}) => {
                 />
                 <Text style={{ ...TextStyles.p, color: Colors.yellow }}>
                   {" "}
-                  4.5(897)
+                  {`${movie.vote_average}(${movie.vote_count})`}
                 </Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                {genres.map((genre, i) => (
-                  <Genre key={i} name={genre} />
-                ))}
               </View>
             </View>
             <Icon icon={<Heart2 size={scale(24)} />} />
           </View>
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          {genres.map((genre) => {
+          if (movie.genre_ids.includes(genre.id)) return <Genre name={genre.name} key={genre.id}/>;
+        })}
+          </View>
           <View style={styles.container}>
             <Text style={TextStyles.h4}>Story Line</Text>
             <Text style={{ ...TextStyles.p, marginTop: scale(16) }}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged.
+              {movie.overview}
             </Text>
           </View>
-          <View style={[styles.container,{marginBottom:scale(104)}]}>
+          <View style={[styles.container, { marginBottom: scale(84) }]}>
             <Text style={TextStyles.h4}>Cast</Text>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ marginTop: scale(16) }}>
-              {casts.map((cast, i) => {
-                return <Cast
-                  key={i}
-                  name={cast.name}
-                  character={cast.character}
-                  profile_path={cast.profile_path}
-                />;
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ marginTop: scale(16) }}
+            >
+              {casts != [] && casts.map((cast) => {
+                return (
+                  <Cast
+                    key={cast.cast_id}
+                    name={cast.name}
+                    character={cast.character}
+                    profile_path={PROFILE_URL + cast.profile_path}
+                  />
+                );
               })}
             </ScrollView>
           </View>
         </View>
-
       </ScrollView>
-      <Button title="Watch Movie" style={styles.playButton} />
+      <Button
+        title="Watch Movie"
+        style={styles.playButton}
+        onPress={() => navigation.navigate("MoviePlayer", {movie_id:movie.id})}
+      />
 
       <Icon
         style={styles.backIcon}
@@ -170,6 +154,7 @@ const styles = ScaledSheet.create({
     paddingVertical: "4@s",
     paddingHorizontal: "12@s",
     marginRight: "8@s",
+    marginBottom:'8@s',
     borderWidth: 1,
     borderColor: Colors.white60,
     borderRadius: "32@s",
@@ -179,12 +164,12 @@ const styles = ScaledSheet.create({
   container: {
     marginTop: "40@s",
   },
-  playButton:{
-    position:'absolute',
-    left:24,
-    right:24,
-    bottom:40
-  }
+  playButton: {
+    position: "absolute",
+    left: "24@s",
+    right: "24@s",
+    bottom: "20@s",
+  },
 });
 
 export default MovieDetailsScreen;
