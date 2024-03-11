@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "MovieApp",
-    "slug": "MovieApp",
+    "name": "Film Fare",
+    "slug": "filmfare",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Logo1.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#121225"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -20,13 +20,17 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sanskaar.filmfare",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/Logo1.png",
+        "backgroundColor": "#121225"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

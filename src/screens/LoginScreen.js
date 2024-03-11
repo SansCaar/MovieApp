@@ -1,10 +1,7 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import { View, Text, SafeAreaView, Image } from "react-native";
 
-
-import * as Facebook from "expo-facebook";
 import * as Google from "expo-google-app-auth";
-import { ArrowLeft, Home } from "react-native-iconly";
 import { ScaledSheet, scale } from "react-native-size-matters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -12,27 +9,31 @@ import Button from "../components/Button";
 import Icon from "../components/Icon";
 import AppContext from "../context/AppContext";
 import { Colors, TextStyles } from "../styles/Styles";
+import { initializeAsync, logInWithReadPermissionsAsync } from "expo-facebook";
 
 const LoginScreen = ({ navigation }) => {
-  const {setUser} = useContext(AppContext)
+  const { setUser } = useContext(AppContext);
   async function signInWithFacebookAsync() {
     try {
-      await Facebook.initializeAsync({
+      await initializeAsync({
         appId: "382825690428119",
       });
-      const { type, token, expirationDate, permissions, declinedPermissions } =
-        await Facebook.logInWithReadPermissionsAsync({
-          permissions: ["public_profile", "email"],
-        });
+      const { type, token } = await logInWithReadPermissionsAsync({
+        permissions: ["public_profile", "email"],
+      });
       if (type === "success") {
         let response = await fetch(
           `https://graph.facebook.com/v13.0/me?fields=id,name,email,picture.height(500)&access_token=${token}`
         );
         let json = await response.json();
-        let data = {id:json.id,email:json.email, name:json.name,photoUrl: json.picture.data.url}
+        let data = {
+          id: json.id,
+          email: json.email,
+          name: json.name,
+          photoUrl: json.picture.data.url,
+        };
         await AsyncStorage.setItem("user", JSON.stringify(data));
-        setUser(data)
-        console.log(data);
+        setUser(data);
         navigation.navigate("Home");
       }
     } catch (e) {
@@ -49,7 +50,7 @@ const LoginScreen = ({ navigation }) => {
 
       if (result.type === "success") {
         AsyncStorage.setItem("user", JSON.stringify(result.user));
-        setUser(result.user)
+        setUser(result.user);
         navigation.navigate("Home");
       } else {
         return { cancelled: true };
@@ -61,11 +62,7 @@ const LoginScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Icon
-          icon={<ArrowLeft size={scale(24)} />}
-          bg={true}
-          onPress={navigation.goBack}
-        />
+        <Icon icon={<></>} bg={true} onPress={navigation.goBack} />
       </View>
       <View style={styles.bottom}>
         <View

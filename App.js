@@ -1,6 +1,8 @@
 import AppStack from "./src/navigation/AppStack";
 import { useFonts } from "expo-font";
-import { ContextProvider } from './src/context/AppContext';
+import { ContextProvider } from "./src/context/AppContext";
+import { StatusBar } from "expo-status-bar";
+import { Colors } from "./src/styles/Styles";
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -10,8 +12,11 @@ export default function App() {
   });
   if (!fontsLoaded) return null;
   return (
-    <ContextProvider>
-      <AppStack/>
-    </ContextProvider>
+    <>
+      <ContextProvider>
+        <AppStack />
+      </ContextProvider>
+      <StatusBar style="light" backgroundColor={Colors.background} />
+    </>
   );
 }

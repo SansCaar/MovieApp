@@ -7,7 +7,7 @@ import AppLoading from "expo-app-loading";
 export const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  const [favourite, setFavourite] = useState(null);
+  const [favourite, setFavourite] = useState([]);
   const logout = async () => {
     await AsyncStorage.removeItem("user");
     setUser(null);
@@ -20,7 +20,7 @@ export const ContextProvider = ({ children }) => {
         setUser(JSON.parse(data));
       }
       if (fav != null) {
-        setFavourite(fav);
+        setFavourite(JSON.parse(fav));
       }
     } catch (e) {
       console.log(e);

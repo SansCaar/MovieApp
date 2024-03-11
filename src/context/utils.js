@@ -1,5 +1,6 @@
 const BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = "";
+const API_READ_TOKEN = "";
 export const POSTER_URL = "https://image.tmdb.org/t/p/w780";
 export const PROFILE_URL = "https://image.tmdb.org/t/p/w185";
 export const genres = [
@@ -26,8 +27,15 @@ export const genres = [
 
 async function get(url) {
   try {
-    const response = await fetch(url);
-    json = response.json()
+    const options = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${API_READ_TOKEN}`,
+      },
+    };
+    const response = await fetch(url, options);
+    json = response.json();
     return json;
   } catch (error) {
     console.log(error);
@@ -37,16 +45,18 @@ async function get(url) {
 export async function getTrending() {
   let url = `${BASE_URL}/trending/movie/week?api_key=${API_KEY}`;
   let data = await get(url);
-  return(data.results)
+  return data.results;
 }
 export async function getDiscover(genre) {
-  let url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genre},null`;
+  // const url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=28';
+
+  let url = `${BASE_URL}/discover/movie?with_genres=${genre}&api_key=${API_KEY}`;
   let data = await get(url);
-  return(data.results)
+  console.log(data);
+  return data.results;
 }
 export async function getCast(movie_id) {
   let url = `${BASE_URL}/movie/${movie_id}/credits?api_key=${API_KEY}`;
   let data = await get(url);
-  console.log(data);
-  return(data.cast)
+  return data.cast;
 }

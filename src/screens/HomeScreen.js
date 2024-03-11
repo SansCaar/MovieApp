@@ -1,16 +1,16 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext, useState, useCallback } from "react";
 import { View, Text, ScrollView, Image, Pressable } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
 
 import Icon from "../components/Icon";
 import { Colors, TextStyles } from "../styles/Styles";
 import AppContext from "../context/AppContext";
 
-import { Heart2, Star, User } from "react-native-iconly";
+// import { User } from "react-native-iconly";
 import { ScaledSheet, scale, moderateScale } from "react-native-size-matters";
-import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
 import { genres, getDiscover, getTrending, POSTER_URL } from "../context/utils";
-import AppLoading from "expo-app-loading";
+import BigMovieCard from "../components/BigMovieCard";
 
 const MovieCard = ({ movie, onPress }) => {
   return (
@@ -60,94 +60,40 @@ const MovieCard = ({ movie, onPress }) => {
     </Pressable>
   );
 };
-const BigMovieCard = ({ movie, onPress }) => {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={{
-        flexDirection: "row",
-        borderRadius: scale(24),
-        backgroundColor: Colors.grey,
-        paddingRight: 24,
-        marginBottom: scale(16),
-      }}
-    >
-      <View>
-        <Image
-          source={{ uri: `${POSTER_URL}/${movie.poster_path}` }}
-          style={{
-            // flex: 1,
-            width: scale(120),
-            height: scale(150),
-            resizeMode: "cover",
-          }}
-          borderBottomLeftRadius={scale(24)}
-          borderTopLeftRadius={scale(24)}
-        />
-      </View>
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: scale(8),
-          paddingVertical: scale(16),
-        }}
-      >
-        <View>
-          <Text style={TextStyles.h4} numberOfLines={1}>
-            {movie.title}
-          </Text>
-          <Text style={TextStyles.p2} numberOfLines={1}>
-            {genres.map((genre) => {
-              if (movie.genre_ids.includes(genre.id)) return `${genre.name}, `;
-            })}
-          </Text>
-          <Text
-            style={{ ...TextStyles.p2, color: Colors.white60, marginTop: 8 }}
-            numberOfLines={2}
-          >
-            {movie.overview}
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: "auto",
-          }}
-        >
-          <Star
-            set="outline"
-            size={20}
-            primaryColor={Colors.yellow}
-            stroke="bold"
-          />
-          <Text style={{ ...TextStyles.p, color: Colors.yellow }}>
-            {" "}
-            {`${movie.vote_average}(${movie.vote_count})`}
-          </Text>
-        </View>
-      </View>
-    </Pressable>
-  );
-};
 const HomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [trending, setTrending] = useState([]);
   const [activeGenre, setActiveGenre] = useState(genres[0].id);
   const [genreWiseMovies, setGenreWiseMovies] = useState([]);
   const { user } = useContext(AppContext);
-  useEffect(async () => {
-    setLoading(true);
-    setTrending(await getTrending());
-    setGenreWiseMovies(await getDiscover(activeGenre));
-    setLoading(false);
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        setLoading(true);
+        setTrending(await getTrending());
+        setGenreWiseMovies(await getDiscover(activeGenre));
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
   }, []);
-
-  return loading ? (
-    <AppLoading />
-  ) : (
+  const onLayoutRootView = useCallback(async () => {
+    if (!loading) {
+      await SplashScreen.hideAsync();
+    }
+  }, [loading]);
+  if (loading) return null;
+  return (
     <>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        stickyHeaderIndices={[4]}
+        onLayout={onLayoutRootView}
+      >
         <View style={styles.header}>
           <Text style={TextStyles.h2}>
             Hello{user ? " " + user.name.split(" ")[0] : " User"}!
@@ -165,7 +111,7 @@ const HomeScreen = ({ navigation }) => {
                   }}
                 />
               ) : (
-                <User size={scale(24)} />
+                <></>
               )
             }
             onPress={() =>
@@ -197,12 +143,16 @@ const HomeScreen = ({ navigation }) => {
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          style={{ marginTop: scale(12) }}
+          style={{
+            backgroundColor: Colors.background,
+            paddingVertical: scale(10),
+          }}
         >
           {genres.map((genre) => (
             <Pressable
               style={{
-                backgroundColor: genre.id === activeGenre? Colors.white:Colors.grey ,
+                backgroundColor:
+                  genre.id === activeGenre ? Colors.white : Colors.grey,
                 paddingHorizontal: scale(24),
                 paddingVertical: scale(8),
                 borderRadius: scale(16),
@@ -220,7 +170,8 @@ const HomeScreen = ({ navigation }) => {
                 style={{
                   flex: 1,
                   fontSize: moderateScale(12, 0.3),
-                  color:genre.id === activeGenre? Colors.background:Colors.white ,
+                  color:
+                    genre.id === activeGenre ? Colors.background : Colors.white,
                 }}
               >
                 {genre.name}
@@ -233,29 +184,30 @@ const HomeScreen = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             style={{ marginTop: scale(30), marginBottom: scale(70) }}
           >
-            {genreWiseMovies.map((movie) => (
+            {genreWiseMovies?.map((movie) => (
               <BigMovieCard
                 key={movie.id}
                 movie={movie}
                 onPress={() => navigation.navigate("Movie", { movie })}
-               />
+              />
             ))}
           </ScrollView>
         </View>
       </ScrollView>
-      <StatusBar style="light" animated={true} />
     </>
   );
 };
 const styles = ScaledSheet.create({
   container: {
+    paddingTop: Constants.statusBarHeight,
     flex: 1,
     position: "relative",
-    paddingTop: `${40 + Constants.statusBarHeight}@s`,
     paddingHorizontal: "24@s",
     backgroundColor: Colors.background,
   },
   header: {
+    marginTop: "20@s",
+
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",

@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -7,18 +7,17 @@ import {
   Dimensions,
   ScrollView,
   StatusBar,
-  ActivityIndicator
 } from "react-native";
-import { ArrowLeft, Heart, Heart2, Star } from "react-native-iconly";
 import { ScaledSheet, scale } from "react-native-size-matters";
 import Button from "../components/Button";
 import Cast from "../components/Cast";
 import Icon from "../components/Icon";
+import AppContext from "../context/AppContext";
 import { genres, getCast, POSTER_URL, PROFILE_URL } from "../context/utils";
 import { Colors, TextStyles } from "../styles/Styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const sWidth = Dimensions.get("window").width;
-
 
 const Genre = ({ name }) => {
   return (
@@ -32,12 +31,35 @@ const Genre = ({ name }) => {
 
 const MovieDetailsScreen = ({ route, navigation }) => {
   const { movie } = route.params;
+  const { favourite, setFavourite } = useContext(AppContext);
+
   const [casts, setCasts] = useState([]);
 
-  React.useEffect( async()=>{
-    setCasts(await getCast(movie.id))
-    console.log(casts)
-  },[])
+  const addFavourite = async () => {
+    let fav = [...favourite];
+    fav.push(movie);
+    try {
+      AsyncStorage.setItem("favourite", JSON.stringify(fav));
+      setFavourite(fav);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const removeFavourite = async () => {
+    let temp = [...favourite];
+    temp = temp.filter((fav) => fav.id != movie.id);
+    try {
+      AsyncStorage.setItem("favourite", JSON.stringify(temp));
+      setFavourite(temp);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    const init = async () => setCasts(await getCast(movie.id));
+    init();
+  }, []);
   return (
     <>
       <Image
@@ -55,27 +77,36 @@ const MovieDetailsScreen = ({ route, navigation }) => {
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.movieContainer}>
           <View style={styles.movieDataContainer}>
-            <View>
-              <Text style={TextStyles.h3}>{movie.title}</Text>
+            <View style={{ flex: 1, marginRight: 24 }}>
+              <Text style={{ ...TextStyles.h3 }}>{movie.title}</Text>
               <View style={styles.movieData}>
-                <Star
+                <Text>.</Text>
+                {/* <Star
                   set="outline"
                   size={24}
                   primaryColor={Colors.yellow}
                   stroke="bold"
-                />
+                /> */}
                 <Text style={{ ...TextStyles.p, color: Colors.yellow }}>
                   {" "}
                   {`${movie.vote_average}(${movie.vote_count})`}
                 </Text>
               </View>
             </View>
-            <Icon icon={<Heart2 size={scale(24)} />} />
+            <View>
+              {favourite?.some((mov) => mov["id"] === movie.id) ? (
+                <Icon onPress={() => removeFavourite()} icon={<></>} />
+              ) : (
+                <Icon onPress={() => addFavourite()} icon={<></>} />
+              )}
+            </View>
+            {/* <Icon icon={<Heart2 size={scale(24)} />} /> */}
           </View>
           <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          {genres.map((genre) => {
-          if (movie.genre_ids.includes(genre.id)) return <Genre name={genre.name} key={genre.id}/>;
-        })}
+            {genres.map((genre) => {
+              if (movie.genre_ids.includes(genre.id))
+                return <Genre name={genre.name} key={genre.id} />;
+            })}
           </View>
           <View style={styles.container}>
             <Text style={TextStyles.h4}>Story Line</Text>
@@ -90,16 +121,17 @@ const MovieDetailsScreen = ({ route, navigation }) => {
               showsHorizontalScrollIndicator={false}
               style={{ marginTop: scale(16) }}
             >
-              {casts != [] && casts.map((cast) => {
-                return (
-                  <Cast
-                    key={cast.cast_id}
-                    name={cast.name}
-                    character={cast.character}
-                    profile_path={PROFILE_URL + cast.profile_path}
-                  />
-                );
-              })}
+              {casts?.length > 0 &&
+                casts.map((cast) => {
+                  return (
+                    <Cast
+                      key={cast.cast_id}
+                      name={cast.name}
+                      character={cast.character}
+                      profile_path={PROFILE_URL + cast.profile_path}
+                    />
+                  );
+                })}
             </ScrollView>
           </View>
         </View>
@@ -107,16 +139,17 @@ const MovieDetailsScreen = ({ route, navigation }) => {
       <Button
         title="Watch Movie"
         style={styles.playButton}
-        onPress={() => navigation.navigate("MoviePlayer", {movie_id:movie.id})}
+        onPress={() =>
+          navigation.navigate("MoviePlayer", { movie_id: movie.id })
+        }
       />
 
       <Icon
         style={styles.backIcon}
         bg={true}
-        icon={<ArrowLeft size={scale(24)} />}
+        icon={<></>}
         onPress={navigation.goBack}
       />
-      <StatusBar />
     </>
   );
 };
@@ -141,6 +174,7 @@ const styles = ScaledSheet.create({
     marginTop: sWidth,
   },
   movieDataContainer: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
@@ -154,7 +188,7 @@ const styles = ScaledSheet.create({
     paddingVertical: "4@s",
     paddingHorizontal: "12@s",
     marginRight: "8@s",
-    marginBottom:'8@s',
+    marginBottom: "8@s",
     borderWidth: 1,
     borderColor: Colors.white60,
     borderRadius: "32@s",
