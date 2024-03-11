@@ -6,7 +6,7 @@ import { Colors } from "../styles/Styles";
 
 export default function MoviePlayer({ route }) {
   const { movie_id } = route.params;
-  const movieUrl = `https://www.2embed.ru/embed/tmdb/movie?id=${movie_id}`;
+  const movieUrl = `https://multiembed.mov/?video_id=${movie_id}&tmdb=1`;
   return (
     <WebView
       style={{
