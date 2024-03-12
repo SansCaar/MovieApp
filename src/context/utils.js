@@ -1,6 +1,7 @@
 const BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = "";
-const API_READ_TOKEN = "";
+const API_KEY = "839a1aa6e43e23445dedbeb46bb21d5d";
+const API_READ_TOKEN =
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4MzlhMWFhNmU0M2UyMzQ0NWRlZGJlYjQ2YmIyMWQ1ZCIsInN1YiI6IjYyNjk1M2QwZWEzN2UwMTE4Nzg0MmQxNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.GZJzT4w-FPSy4b2ABWvNPkUjmGEEHp8ADt7GWYeP9A8";
 export const POSTER_URL = "https://image.tmdb.org/t/p/w780";
 export const PROFILE_URL = "https://image.tmdb.org/t/p/w185";
 export const genres = [
